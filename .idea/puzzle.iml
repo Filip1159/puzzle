@@ -9,5 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="createjs" level="application" />
+    <orderEntry type="library" name="zim_6.9.0" level="application" />
   </component>
 </module>
