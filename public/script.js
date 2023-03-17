@@ -1,6 +1,7 @@
 import createjs from "https://zimjs.org/cdn/1.3.4/createjs_module"
 import zim from "https://zimjs.com/cdn/02/zim"
-import { showSuccess } from "/gameEnd.js";
+import { drawPieceEdges } from "./drawPiece.js";
+import { onPieceReleased } from "./fitDetection.js";
 
 const SCALING = "fit"
 const WIDTH = 1024
@@ -45,7 +46,6 @@ frame.on("ready", () => {
         const imageHeight = imageObj.height
         const pieceWidth = Math.round(imageWidth / horizontalPieces)
         const pieceHeight = Math.round(imageHeight / verticalPieces)
-        const gap = 40
         totalPieces = horizontalPieces*verticalPieces
 
         puzzleX = frame.width/2 - imageWidth/2
@@ -60,9 +60,6 @@ frame.on("ready", () => {
             for (let i = 0; i < horizontalPieces; i++) {
                 const offsetX = pieceWidth * i
                 const offsetY = pieceHeight * j
-
-                const x8 = Math.round(pieceWidth / 8)
-                const y8 = Math.round(pieceHeight / 8)
 
                 piecesArrayObj[j][i] = {}
                 piecesArrayObj[j][i].right = Math.floor(Math.random() * 2)
@@ -83,79 +80,9 @@ frame.on("ready", () => {
                 s.drag()
                 s.mouseChildren = false
                 s.addEventListener("pressup", e => {
-                    const mc = e.currentTarget
-                    const xx = Math.round(mc.x)
-                    const yy = Math.round(mc.y)
-
-                    if (xx < puzzleX+gap / 2 && xx > puzzleX-gap / 2 && yy < puzzleX+gap / 2 && yy > puzzleY-gap / 2) {
-                        mc.x = puzzleX
-                        mc.y = puzzleY
-                        mc.noDrag()
-                        mc.addTo(mc.parent, 0)
-                        mc.mouseChildren = false
-                        mc.mouseEnabled = false
-                        mc.hint.visible = false
-                        countPieces++
-                        label.text = "Jigsaw Puzzle " + countPieces + "/" + totalPieces
-                        console.log("countPieces", countPieces)
-                        if (countPieces === totalPieces - 19) {
-                            showSuccess()
-                        }
-                        stage.update()
-                    }
-
+                    countPieces = onPieceReleased(e, puzzleX, puzzleY, countPieces, totalPieces, label, stage)
                 })
-                context.setStrokeStyle(3,"round")
-                // eslint-disable-next-line no-unused-expressions
-                context.beginStroke(createjs.Graphics.getRGB(0, 0, 0)).command
-                // eslint-disable-next-line no-unused-expressions
-                context.beginBitmapFill(imageObj.image).command
-                context.moveTo(offsetX, offsetY)
-
-                if (j !== 0) {
-                    context.lineTo(offsetX + 3 * x8, offsetY)
-                    if (tileObj.up === 1) {
-                        context.curveTo(offsetX + 2 * x8, offsetY - 2 * y8, offsetX + 4 * x8, offsetY - 2 * y8)
-                        context.curveTo(offsetX + 6 * x8, offsetY - 2 * y8, offsetX + 5 * x8, offsetY)
-                    } else {
-                        context.curveTo(offsetX + 2 * x8, offsetY + 2 * y8, offsetX + 4 * x8, offsetY + 2 * y8)
-                        context.curveTo(offsetX + 6 * x8, offsetY + 2 * y8, offsetX + 5 * x8, offsetY)
-                    }
-                }
-                context.lineTo(offsetX + 8 * x8, offsetY)
-                if (i !== horizontalPieces - 1) {
-                    context.lineTo(offsetX + 8 * x8, offsetY + 3 * y8)
-                    if (tileObj.right === 1) {
-                        context.curveTo(offsetX + 10 * x8, offsetY + 2 * y8, offsetX + 10 * x8, offsetY + 4 * y8)
-                        context.curveTo(offsetX + 10 * x8, offsetY + 6 * y8, offsetX + 8 * x8, offsetY + 5 * y8)
-                    } else {
-                        context.curveTo(offsetX + 6 * x8, offsetY + 2 * y8, offsetX + 6 * x8, offsetY + 4 * y8)
-                        context.curveTo(offsetX + 6 * x8, offsetY + 6 * y8, offsetX + 8 * x8, offsetY + 5 * y8)
-                    }
-                }
-                context.lineTo(offsetX + 8 * x8, offsetY + 8 * y8)
-                if (j !== verticalPieces - 1) {
-                    context.lineTo(offsetX + 5 * x8, offsetY + 8 * y8)
-                    if (tileObj.down === 1) {
-                        context.curveTo(offsetX + 6 * x8, offsetY + 10 * y8, offsetX + 4 * x8, offsetY + 10 * y8)
-                        context.curveTo(offsetX + 2 * x8, offsetY + 10 * y8, offsetX + 3 * x8, offsetY + 8 * y8)
-                    } else {
-                        context.curveTo(offsetX + 6 * x8, offsetY + 6 * y8, offsetX + 4 * x8, offsetY + 6 * y8)
-                        context.curveTo(offsetX + 2 * x8, offsetY + 6 * y8, offsetX + 3 * x8, offsetY + 8 * y8)
-                    }
-                }
-                context.lineTo(offsetX, offsetY + 8 * y8)
-                if (i !== 0) {
-                    context.lineTo(offsetX, offsetY + 5 * y8)
-                    if (tileObj.left === 1) {
-                        context.curveTo(offsetX - 2 * x8, offsetY + 6 * y8, offsetX - 2 * x8, offsetY + 4 * y8)
-                        context.curveTo(offsetX - 2 * x8, offsetY + 2 * y8, offsetX, offsetY + 3 * y8)
-                    } else {
-                        context.curveTo(offsetX + 2 * x8, offsetY + 6 * y8, offsetX + 2 * x8, offsetY + 4 * y8)
-                        context.curveTo(offsetX + 2 * x8, offsetY + 2 * y8, offsetX, offsetY + 3 * y8)
-                    }
-                }
-                context.lineTo(offsetX, offsetY)
+                drawPieceEdges(imageObj, tileObj, context, j, i, offsetX, offsetY)
                 s.addTo(con)
 
                 const fill = new createjs.Graphics.Fill("red")
