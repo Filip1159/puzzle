@@ -1,5 +1,6 @@
 import createjs from "https://zimjs.org/cdn/1.3.4/createjs_module"
 import zim from "https://zimjs.com/cdn/02/zim"
+import { showSuccess } from "/gameEnd.js";
 
 const SCALING = "fit"
 const WIDTH = 1024
@@ -38,7 +39,6 @@ frame.on("ready", () => {
         imageObj.addTo(con)
         imageObj.alpha = 0.2
 
-        let piecesArray = []
         const horizontalPieces = 5
         const verticalPieces = 4
         const imageWidth = imageObj.width
@@ -58,8 +58,6 @@ frame.on("ready", () => {
         for (let j = 0; j < verticalPieces; j++) {
             piecesArrayObj[j] = []
             for (let i = 0; i < horizontalPieces; i++) {
-                const n = j + i * verticalPieces
-
                 const offsetX = pieceWidth * i
                 const offsetY = pieceHeight * j
 
@@ -73,7 +71,7 @@ frame.on("ready", () => {
                 if (j > 0) piecesArrayObj[j][i].up = 1 - piecesArrayObj[j - 1][i].down
                 if (i > 0) piecesArrayObj[j][i].left = 1 - piecesArrayObj[j][i - 1].right
 
-                piecesArray[n] = new zim.Rectangle({
+                new zim.Rectangle({
                     width: pieceWidth,
                     height: pieceHeight,
                 })
@@ -100,22 +98,8 @@ frame.on("ready", () => {
                         countPieces++
                         label.text = "Jigsaw Puzzle " + countPieces + "/" + totalPieces
                         console.log("countPieces", countPieces)
-                        if (countPieces == totalPieces) {
-                            const pane = new zim.Pane({
-                                width: 600,
-                                label: "VERY NICE!",
-                                height: 250,
-                                modal: false,
-                                displayClose: false
-                            })
-
-                            const confirm = new zim.Button(120, 50, "ON", "green").center(pane).mov(0, 70)
-
-                            confirm.on("click", () => {
-                                pane.hide()
-                                window.location.replace(window.location.pathname + window.location.search + window.location.hash)
-                            })
-                            pane.show()
+                        if (countPieces === totalPieces - 19) {
+                            showSuccess()
                         }
                         stage.update()
                     }
