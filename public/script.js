@@ -1,20 +1,22 @@
-import createjs from "https://zimjs.org/cdn/1.3.4/createjs_module"
 import zim from "https://zimjs.com/cdn/02/zim"
 import { drawPieceEdges } from "./drawPiece.js";
 import { onPieceReleased } from "./fitDetection.js";
+import { drawHintForPiece } from "./board.js";
 
 const SCALING = "fit"
 const WIDTH = 1024
 const HEIGHT = 768
+const HORIZONTAL_PIECES = 5
+const VERTICAL_PIECES = 4
+const BOARD_X = 112
+const BOARD_Y = 84
 let countPieces = 0
-let totalPieces = 0
+export const TOTAL_PIECES = 20
 
 const frame = new zim.Frame(SCALING, WIDTH, HEIGHT)
 frame.on("ready", () => {
     const stage = frame.stage
 
-    let puzzleX
-    let puzzleY
     frame.outerColor = "#444"
     frame.color = "#ddd"
 
@@ -24,40 +26,21 @@ frame.on("ready", () => {
     const piecesArrayObj = []
     frame.loadAssets(["brave.jpg"], "/img/")
 
-    const label = new zim.Label({
-        text: "CLICK",
-        size: 60,
-        font: "courier",
-        color: "orange",
-        rollColor: "red",
-        fontOptions: "italic bold"
-    })
-    stage.addChild(label)
-    label.x = label.y = 20
-
     frame.on("complete", () => {
         imageObj = frame.asset("brave.jpg").clone()
         imageObj.addTo(con)
         imageObj.alpha = 0.2
 
-        const horizontalPieces = 5
-        const verticalPieces = 4
         const imageWidth = imageObj.width
         const imageHeight = imageObj.height
-        const pieceWidth = Math.round(imageWidth / horizontalPieces)
-        const pieceHeight = Math.round(imageHeight / verticalPieces)
-        totalPieces = horizontalPieces*verticalPieces
+        const pieceWidth = Math.round(imageWidth / HORIZONTAL_PIECES)
+        const pieceHeight = Math.round(imageHeight / VERTICAL_PIECES)
 
-        puzzleX = frame.width/2 - imageWidth/2
-        puzzleY = frame.height/2 - imageHeight/2
-        imageObj.pos(puzzleX, puzzleY)
-        console.log(puzzleX, puzzleY)
+        imageObj.pos(BOARD_X, BOARD_Y)
 
-        label.text = "Jigsaw Puzzle " + countPieces + "/" + totalPieces
-
-        for (let j = 0; j < verticalPieces; j++) {
+        for (let j = 0; j < VERTICAL_PIECES; j++) {
             piecesArrayObj[j] = []
-            for (let i = 0; i < horizontalPieces; i++) {
+            for (let i = 0; i < HORIZONTAL_PIECES; i++) {
                 const offsetX = pieceWidth * i
                 const offsetY = pieceHeight * j
 
@@ -80,21 +63,12 @@ frame.on("ready", () => {
                 s.drag()
                 s.mouseChildren = false
                 s.addEventListener("pressup", e => {
-                    countPieces = onPieceReleased(e, puzzleX, puzzleY, countPieces, totalPieces, label, stage)
+                    countPieces = onPieceReleased(e, BOARD_X, BOARD_Y, countPieces, stage)
                 })
                 drawPieceEdges(imageObj, tileObj, context, j, i, offsetX, offsetY)
                 s.addTo(con)
 
-                const fill = new createjs.Graphics.Fill("red")
-                const hint = new zim.Shape()
-                hint.mouseChildren = false
-                hint.mouseEnabled = false
-                s.hint = hint
-                hint.graphics = context.clone(true)
-                hint.pos(puzzleX,puzzleY)
-                hint.graphics._fill = fill
-                hint.graphics._fill.style = null
-                hint.addTo(con, 0)
+                drawHintForPiece(BOARD_X, BOARD_Y, s, con, context)
                 s.animate({
                     obj: {
                         x: zim.rand(-offsetX, frame.width - offsetX - pieceWidth),

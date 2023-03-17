@@ -1,8 +1,9 @@
 import { showSuccess } from "./gameEnd.js";
+import { TOTAL_PIECES } from "./script.js";
 
 const GAP = 40
 
-export const onPieceReleased = (e, puzzleX, puzzleY, countPieces, totalPieces, label, stage) => {
+export const onPieceReleased = (e, puzzleX, puzzleY, countPieces, stage) => {
     const mc = e.currentTarget
     const xx = Math.round(mc.x)
     const yy = Math.round(mc.y)
@@ -16,9 +17,7 @@ export const onPieceReleased = (e, puzzleX, puzzleY, countPieces, totalPieces, l
         mc.mouseEnabled = false
         mc.hint.visible = false
         countPieces++
-        label.text = "Jigsaw Puzzle " + countPieces + "/" + totalPieces
-        console.log("countPieces", countPieces)
-        if (countPieces === totalPieces - 19) {
+        if (countPieces === TOTAL_PIECES) {
             showSuccess()
         }
         stage.update()
