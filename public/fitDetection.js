@@ -1,6 +1,8 @@
 import { showSuccess } from "./gameEnd.js";
 import { TOTAL_PIECES } from "./script.js";
 
+const pop = new Audio('./pop.mp3');
+
 const GAP = 40
 
 export const onPieceReleased = (e, puzzleX, puzzleY, countPieces, stage) => {
@@ -17,6 +19,7 @@ export const onPieceReleased = (e, puzzleX, puzzleY, countPieces, stage) => {
         mc.mouseEnabled = false
         mc.hint.visible = false
         countPieces++
+        pop.play()
         if (countPieces === TOTAL_PIECES) {
             showSuccess()
         }
