@@ -2,6 +2,7 @@ import zim from "https://zimjs.com/cdn/02/zim"
 import { drawPieceEdges } from "./drawPiece.js";
 import { onPieceReleased } from "./fitDetection.js";
 import { drawHintForPiece } from "./board.js";
+import { generateRandomPuzzleHooks } from "./randomPuzzleShapeGenerator.js";
 
 const SCALING = "fit"
 const WIDTH = 1024
@@ -44,31 +45,26 @@ frame.on("ready", () => {
                 const offsetX = pieceWidth * i
                 const offsetY = pieceHeight * j
 
-                piecesConvexity[j][i] = {}
-                piecesConvexity[j][i].right = Math.floor(Math.random() * 2) !== 0
-                piecesConvexity[j][i].down = Math.floor(Math.random() * 2) !== 0
-
-                if (j > 0) piecesConvexity[j][i].up = !piecesConvexity[j - 1][i].down
-                if (i > 0) piecesConvexity[j][i].left = !piecesConvexity[j][i - 1].right
+                generateRandomPuzzleHooks(piecesConvexity, i, j)
 
                 new zim.Rectangle({
                     width: pieceWidth,
                     height: pieceHeight,
                 })
 
-                const s = new zim.Shape()
+                const puzzlePiece = new zim.Shape()
 
-                const context = s.graphics
-                s.drag()
-                s.mouseChildren = false
-                s.addEventListener("pressup", e => {
+                const context = puzzlePiece.graphics
+                puzzlePiece.drag()
+                puzzlePiece.mouseChildren = false
+                puzzlePiece.addEventListener("pressup", e => {
                     countPieces = onPieceReleased(e, BOARD_X, BOARD_Y, countPieces, stage)
                 })
                 drawPieceEdges(imageObj, piecesConvexity[j][i], context, j, i, offsetX, offsetY)
-                s.addTo(con)
+                puzzlePiece.addTo(con)
 
-                drawHintForPiece(BOARD_X, BOARD_Y, s, con, context)
-                s.animate({
+                drawHintForPiece(BOARD_X, BOARD_Y, puzzlePiece, con, context)
+                puzzlePiece.animate({
                     obj: {
                         x: zim.rand(-offsetX, frame.width - offsetX - pieceWidth),
                         y: zim.rand(-offsetY, frame.height - offsetY - pieceHeight)
