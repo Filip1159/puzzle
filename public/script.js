@@ -23,7 +23,7 @@ frame.on("ready", () => {
     const con = new zim.Container()
 
     let imageObj = []
-    const piecesArrayObj = []
+    const piecesConvexity = []  // convexity = wypukłość
     frame.loadAssets(["brave.jpg"], "/img/")
 
     frame.on("complete", () => {
@@ -39,24 +39,23 @@ frame.on("ready", () => {
         imageObj.pos(BOARD_X, BOARD_Y)
 
         for (let j = 0; j < VERTICAL_PIECES; j++) {
-            piecesArrayObj[j] = []
+            piecesConvexity[j] = []
             for (let i = 0; i < HORIZONTAL_PIECES; i++) {
                 const offsetX = pieceWidth * i
                 const offsetY = pieceHeight * j
 
-                piecesArrayObj[j][i] = {}
-                piecesArrayObj[j][i].right = Math.floor(Math.random() * 2)
-                piecesArrayObj[j][i].down = Math.floor(Math.random() * 2)
+                piecesConvexity[j][i] = {}
+                piecesConvexity[j][i].right = Math.floor(Math.random() * 2) !== 0
+                piecesConvexity[j][i].down = Math.floor(Math.random() * 2) !== 0
 
-                if (j > 0) piecesArrayObj[j][i].up = 1 - piecesArrayObj[j - 1][i].down
-                if (i > 0) piecesArrayObj[j][i].left = 1 - piecesArrayObj[j][i - 1].right
+                if (j > 0) piecesConvexity[j][i].up = !piecesConvexity[j - 1][i].down
+                if (i > 0) piecesConvexity[j][i].left = !piecesConvexity[j][i - 1].right
 
                 new zim.Rectangle({
                     width: pieceWidth,
                     height: pieceHeight,
                 })
 
-                const tileObj = piecesArrayObj[j][i]
                 const s = new zim.Shape()
 
                 const context = s.graphics
@@ -65,7 +64,7 @@ frame.on("ready", () => {
                 s.addEventListener("pressup", e => {
                     countPieces = onPieceReleased(e, BOARD_X, BOARD_Y, countPieces, stage)
                 })
-                drawPieceEdges(imageObj, tileObj, context, j, i, offsetX, offsetY)
+                drawPieceEdges(imageObj, piecesConvexity[j][i], context, j, i, offsetX, offsetY)
                 s.addTo(con)
 
                 drawHintForPiece(BOARD_X, BOARD_Y, s, con, context)
