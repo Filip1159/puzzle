@@ -1,4 +1,5 @@
 import zim from "https://zimjs.com/cdn/02/zim"
+import { stopTimer } from "./timer.js";
 
 export const showSuccess = () => {
     const pane = new zim.Pane({
@@ -13,5 +14,6 @@ export const showSuccess = () => {
         pane.hide()
         window.location.replace(window.location.pathname + window.location.search + window.location.hash)
     })
+    stopTimer()
     pane.show()
 }

@@ -3,6 +3,7 @@ import { drawPieceEdges } from "./drawPiece.js";
 import { onPieceReleased } from "./fitDetection.js";
 import { drawHintForPiece } from "./board.js";
 import { generateRandomPuzzleHooks } from "./randomPuzzleShapeGenerator.js";
+import { runTimer } from "./timer.js";
 
 const SCALING = "fit"
 const WIDTH = 1024
@@ -14,11 +15,13 @@ const BOARD_Y = 84
 let countPieces = 0
 export const TOTAL_PIECES = 20
 
-const frame = new zim.Frame(SCALING, WIDTH, HEIGHT)
+runTimer()
+
+const frame = new zim.Frame(SCALING, WIDTH, HEIGHT, null, null, null, null, null, null, null, null, null, null, null, null, "puzzleCanvas")
 frame.on("ready", () => {
     const stage = frame.stage
 
-    frame.outerColor = "#444"
+    frame.outerColor = "#ddd"
     frame.color = "#ddd"
 
     const con = new zim.Container()
@@ -29,7 +32,6 @@ frame.on("ready", () => {
 
     frame.on("complete", () => {
         imageObj = frame.asset("brave.jpg").clone()
-        imageObj.addTo(con)
         imageObj.alpha = 0.2
 
         const imageWidth = imageObj.width

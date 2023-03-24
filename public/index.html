@@ -2,11 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Jigsaw Puzzle - ZIM Frame</title>
+  <title>Puzzle game</title>
   <script src="script.js" type="module"></script>
+  <link rel="stylesheet" href="style.css" />
   <meta name="viewport" content="width=device-width, user-scalable=no" />
 </head>
-
 <body>
+  <div id="container">
+    <div id="leftPanel">
+      <div id="title">Puzzle game</div>
+      <div id="timer">00:00</div>
+      <img id="imageHint" src="img/brave.jpg" alt="image"/>
+    </div>
+    <canvas id="puzzleCanvas"></canvas>
+  </div>
 </body>
 </html>
