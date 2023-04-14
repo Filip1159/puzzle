@@ -8,7 +8,7 @@ export const showSuccess = () => {
         height: 250,
     })
 
-    const confirm = new zim.Button(120, 50, "Try again", "#59b").center(pane).mov(0, 70)
+    const confirm = new zim.Button(160, 50, "Try again", "#59b").center(pane).mov(0, 70)
 
     confirm.on("click", () => {
         pane.hide()

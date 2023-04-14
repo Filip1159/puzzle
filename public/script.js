@@ -28,10 +28,10 @@ frame.on("ready", () => {
 
     let imageObj = []
     const piecesConvexity = []  // convexity = wypukłość
-    frame.loadAssets(["brave.jpg"], "/img/")
+    frame.loadAssets(["wroclaw.jpg"], "/img/")
 
     frame.on("complete", () => {
-        imageObj = frame.asset("brave.jpg").clone()
+        imageObj = frame.asset("wroclaw.jpg").clone()
         imageObj.alpha = 0.2
 
         const imageWidth = imageObj.width
